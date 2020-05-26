@@ -1,0 +1,27 @@
+# 不要试图编写独立于容器类型的代码
+
+
+
+STL 是以泛化原则为基础的：
+
+- 数组被泛化为以其所包含对象的类型为参数的容器
+- 函数被泛化为以其使用的迭代器的类型为参数的算法
+- 指针被泛化为以其所指向的对象的类型为参数的迭代器
+- 容器类型被泛化为序列和关联容器，类似的容器被赋予相似的功能：
+  - 标准的连续内存容器提供了随机访问迭代器，而标准的基于节点的容器提供了双向迭代器
+  - 序列容器支持 `push_front` 和/或 `push _back` 操作，而关联容器则不然
+  - 关联容器提供了对数时间的 `lower_bound`、`upper_bound` 和 `equal_range` 成员函数，但序列容器却没有提供
+
+考虑到以后可能会使用其他的容器替换现有的容器，为了使修改的部分最小化，最好使用 Class 将自定义的容器封装起来，可以更好的实现修改部分最小化，同时达到了安全修改的目的：
+
+```
+{
+private:   
+    typedef vector<Widget> InternalContainer;
+    typedef InternalContainer::Iterator ICIterator;
+    InternalContainer container;  
+public:
+	...
+};
+```
+
